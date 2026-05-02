@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "423289236248",
+    "project_id": "the-pegasus-school-map",
+    "storage_bucket": "the-pegasus-school-map.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:423289236248:android:c8ddd5aec89bf1027f8c6d",
+        "android_client_info": {
+          "package_name": "com.pegasusschool.find_your_way_around"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB3el6YDvEbdMpWwsY4HcJVfcsYaO2ayg0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

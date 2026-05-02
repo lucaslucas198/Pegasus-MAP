@@ -1,0 +1,13 @@
+{
+  "firestore": {
+    "rules": "firestore.rules"
+  },
+  "flutter": {
+    "platforms": {
+      "android": {"default": {"projectId": "the-pegasus-school-map", "appId": "1:423289236248:android:c8ddd5aec89bf1027f8c6d", "fileOutput": "android/app/google-services.json"}},
+      "ios": {"default": {"projectId": "the-pegasus-school-map", "appId": "1:423289236248:ios:94f03a7b9ac4d8cc7f8c6d", "uploadDebugSymbols": false, "fileOutput": "ios/Runner/GoogleService-Info.plist"}},
+      "macos": {"default": {"projectId": "the-pegasus-school-map", "appId": "1:423289236248:ios:94f03a7b9ac4d8cc7f8c6d", "uploadDebugSymbols": false, "fileOutput": "macos/Runner/GoogleService-Info.plist"}},
+      "dart": {"lib/firebase_options.dart": {"projectId": "the-pegasus-school-map", "configurations": {"android": "1:423289236248:android:c8ddd5aec89bf1027f8c6d", "ios": "1:423289236248:ios:94f03a7b9ac4d8cc7f8c6d", "macos": "1:423289236248:ios:94f03a7b9ac4d8cc7f8c6d", "web": "1:423289236248:web:25772425b81183897f8c6d", "windows": "1:423289236248:web:a10fb9b564c08f1a7f8c6d"}}}
+    }
+  }
+}

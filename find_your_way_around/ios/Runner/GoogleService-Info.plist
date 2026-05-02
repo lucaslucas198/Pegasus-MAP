@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>API_KEY</key>
+	<string>AIzaSyDM4RrowAfAif7xhQmVgVnpAx960DTNCsA</string>
+	<key>GCM_SENDER_ID</key>
+	<string>423289236248</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.pegasusschool.findYourWayAround</string>
+	<key>PROJECT_ID</key>
+	<string>the-pegasus-school-map</string>
+	<key>STORAGE_BUCKET</key>
+	<string>the-pegasus-school-map.firebasestorage.app</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:423289236248:ios:94f03a7b9ac4d8cc7f8c6d</string>
+</dict>
+</plist>
