@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
+import '../../shared/data/dummy_data.dart';
 import '../../shared/models/teacher.dart';
 import '../teachers/teachers_repository.dart';
 
@@ -26,6 +27,11 @@ class AdminDashboardPage extends ConsumerWidget {
       appBar: AppBar(
         title: const Text('Admin — Teachers'),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.science_outlined),
+            tooltip: 'Seed test data',
+            onPressed: () => _seedTestData(context, ref),
+          ),
           IconButton(
             icon: const Icon(Icons.logout),
             tooltip: 'Sign out',
@@ -49,6 +55,49 @@ class AdminDashboardPage extends ConsumerWidget {
             : _TeacherList(teachers: teachers),
       ),
     );
+  }
+
+  Future<void> _seedTestData(BuildContext context, WidgetRef ref) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Seed test data?'),
+        content: const Text(
+          'This will add 10 dummy teachers to Firestore. '
+          'Existing teachers will not be removed.',
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
+          TextButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Seed')),
+        ],
+      ),
+    );
+    if (confirmed != true || !context.mounted) return;
+
+    final repo = ref.read(teachersRepositoryProvider);
+    try {
+      for (final t in kDummyTeachers) {
+        await repo.add(Teacher(
+          id: '',
+          name: t['name']!,
+          subject: t['subject']!,
+          roomNumber: t['roomNumber']!,
+          email: t['email']!,
+          photoUrl: t['photoUrl']!,
+        ));
+      }
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('10 dummy teachers added.')),
+        );
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Seed failed: $e'), backgroundColor: Colors.red),
+        );
+      }
+    }
   }
 
   void _showTeacherForm(BuildContext context, WidgetRef ref, Teacher? existing) {

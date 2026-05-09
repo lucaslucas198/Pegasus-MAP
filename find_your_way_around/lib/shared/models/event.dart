@@ -5,6 +5,7 @@ class Event {
   final DateTime? end;
   final String? location;
   final String? description;
+  final bool isAllDay;
 
   const Event({
     required this.id,
@@ -13,5 +14,6 @@ class Event {
     this.end,
     this.location,
     this.description,
+    this.isAllDay = false,
   });
 }

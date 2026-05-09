@@ -2,22 +2,28 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import '../../shared/models/event.dart';
+import '../../shared/data/dummy_data.dart';
 
 const _calendarId = 'TODO_CALENDAR_ID';
 const _apiKey = 'AIzaSyB2xqSwDgPNzCyHBu4x_i78vVbOW2kLp0c';
 
-final calendarServiceProvider =
-    Provider<CalendarService>((_) => CalendarService());
+/// Currently selected day in the calendar UI.
+/// Shared between [CalendarPage] and any other widget that needs it.
+final selectedDayProvider = StateProvider<DateTime>((_) => DateTime.now());
 
+final calendarServiceProvider = Provider<CalendarService>((_) => CalendarService());
+
+/// All school events. When the Google Calendar ID is configured, swap
+/// [CalendarService] for a subclass/implementation that overrides
+/// [fetchEventsForDateRange] with a real API call.
 final eventsProvider = FutureProvider.autoDispose<List<Event>>((ref) async {
   return ref.watch(calendarServiceProvider).fetchUpcomingEvents();
 });
 
 class CalendarService {
   Future<List<Event>> fetchUpcomingEvents() async {
-    if (_calendarId == 'TODO_CALENDAR_ID') {
-      return _demoEvents();
-    }
+    // Return dummy events while the real Google Calendar ID is not yet configured.
+    if (_calendarId == 'TODO_CALENDAR_ID') return dummyEventList;
 
     final now = DateTime.now().toUtc().toIso8601String();
     final url = Uri.parse(
@@ -27,7 +33,7 @@ class CalendarService {
       '&timeMin=$now'
       '&orderBy=startTime'
       '&singleEvents=true'
-      '&maxResults=50',
+      '&maxResults=100',
     );
 
     final response = await http.get(url);
@@ -36,7 +42,42 @@ class CalendarService {
           'Failed to load calendar events: ${response.statusCode}');
     }
 
-    final json = jsonDecode(response.body) as Map<String, dynamic>;
+    return _parseEvents(response.body);
+  }
+
+  /// Fetches events within [start]..[end]. Used by the calendar view when
+  /// the user navigates to a different month.
+  ///
+  /// TODO: replace the fallback below with a real Google Calendar API call
+  /// filtered by timeMin=[start] and timeMax=[end] once the Calendar ID is set.
+  Future<List<Event>> fetchEventsForDateRange(DateTime start, DateTime end) async {
+    if (_calendarId == 'TODO_CALENDAR_ID') {
+      return dummyEventList.where((e) {
+        return !e.start.isBefore(start) && !e.start.isAfter(end);
+      }).toList();
+    }
+
+    final url = Uri.parse(
+      'https://www.googleapis.com/calendar/v3/calendars/'
+      '${Uri.encodeComponent(_calendarId)}/events'
+      '?key=$_apiKey'
+      '&timeMin=${start.toUtc().toIso8601String()}'
+      '&timeMax=${end.toUtc().toIso8601String()}'
+      '&orderBy=startTime'
+      '&singleEvents=true'
+      '&maxResults=250',
+    );
+
+    final response = await http.get(url);
+    if (response.statusCode != 200) {
+      throw Exception('Failed to load calendar events: ${response.statusCode}');
+    }
+
+    return _parseEvents(response.body);
+  }
+
+  List<Event> _parseEvents(String body) {
+    final json = jsonDecode(body) as Map<String, dynamic>;
     final items = json['items'] as List<dynamic>? ?? [];
 
     return items.map((item) {
@@ -44,11 +85,10 @@ class CalendarService {
       final startMap = map['start'] as Map<String, dynamic>? ?? {};
       final endMap = map['end'] as Map<String, dynamic>? ?? {};
 
-      final startStr = startMap['dateTime'] as String? ??
-          startMap['date'] as String? ??
-          '';
-      final endStr =
-          endMap['dateTime'] as String? ?? endMap['date'] as String?;
+      // All-day events use 'date'; timed events use 'dateTime'
+      final isAllDay = startMap['date'] != null && startMap['dateTime'] == null;
+      final startStr = startMap['dateTime'] as String? ?? startMap['date'] as String? ?? '';
+      final endStr = endMap['dateTime'] as String? ?? endMap['date'] as String?;
 
       return Event(
         id: map['id'] as String? ?? '',
@@ -57,6 +97,7 @@ class CalendarService {
         end: endStr != null ? DateTime.parse(endStr) : null,
         location: map['location'] as String?,
         description: map['description'] as String?,
+        isAllDay: isAllDay,
       );
     }).toList();
   }
